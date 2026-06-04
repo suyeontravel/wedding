@@ -1,0 +1,846 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>청첩장</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&family=Noto+Serif+KR:wght@200;300;400&family=Playfair+Display:ital@1&display=swap" rel="stylesheet">
+
+<style>
+  /* =============================================
+     ✏️  개인정보 수정 구역 — CSS 변수로 관리
+     아래 값들을 원하는 정보로 바꿔주세요
+  ============================================= */
+  :root {
+    /* 이름 */
+    --groom-family: "김";          /* 신랑 성 */
+    --groom-name: "준혁";          /* 신랑 이름 */
+    --bride-family: "이";           /* 신부 성 */
+    --bride-name: "수아";           /* 신부 이름 */
+
+    /* 날짜 & 시간 */
+    --wedding-date-kr: "2025년 10월 18일 토요일";
+    --wedding-time: "오후 2시";
+
+    /* 장소 */
+    --venue-name: "더 포레스트 웨딩홀";
+    --venue-address: "서울시 강남구 논현로 123";
+    --venue-hall: "그린 홀 3층";
+
+    /* 연락처 (전화 걸기 링크용) */
+    --groom-tel: "010-1234-5678";
+    --bride-tel: "010-9876-5432";
+    --groom-parents-tel: "010-1111-2222";
+    --bride-parents-tel: "010-3333-4444";
+
+    /* 계좌번호 */
+    --groom-bank: "신한은행 110-123-456789";
+    --bride-bank: "국민은행 123-45-678901";
+    --groom-bank-holder: "김준혁";
+    --bride-bank-holder: "이수아";
+
+    /* 지도 링크 (카카오맵 / 네이버맵 공유 URL) */
+    --map-link: "https://map.kakao.com";
+
+    /* 메인 사진 (URL 또는 로컬 파일 경로) */
+    --main-photo: "https://images.unsplash.com/photo-1606216794074-735e91aa2c92?w=800&q=80";
+    --photo2: "https://images.unsplash.com/photo-1519741347686-c1e0aadf4611?w=600&q=80";
+    --photo3: "https://images.unsplash.com/photo-1511285560929-80b456503681?w=600&q=80";
+
+    /* 색상 테마 (필요시 조정) */
+    --color-bg: #faf9f7;
+    --color-text: #2c2c2c;
+    --color-muted: #7a7a72;
+    --color-green: #6b8c6b;
+    --color-green-light: #c8d9c0;
+    --color-cream: #f0ece3;
+    --color-line: #d8d2c4;
+    --color-accent: #8fa888;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--color-bg);
+    color: var(--color-text);
+    font-family: 'Noto Serif KR', serif;
+    font-weight: 300;
+    max-width: 430px;
+    margin: 0 auto;
+    overflow-x: hidden;
+  }
+
+  /* ── 커버 섹션 ── */
+  .cover {
+    position: relative;
+    height: 100svh;
+    min-height: 600px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-end;
+    overflow: hidden;
+  }
+
+  .cover-photo {
+    position: absolute;
+    inset: 0;
+    background-image: url(var(--main-photo));
+    background-size: cover;
+    background-position: center 20%;
+    transform: scale(1.05);
+    animation: slowZoom 8s ease-out forwards;
+  }
+
+  @keyframes slowZoom {
+    from { transform: scale(1.08); }
+    to   { transform: scale(1.00); }
+  }
+
+  .cover-overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+      to bottom,
+      rgba(250,249,247,0.05) 0%,
+      rgba(250,249,247,0.10) 40%,
+      rgba(250,249,247,0.70) 75%,
+      rgba(250,249,247,1.00) 100%
+    );
+  }
+
+  .cover-content {
+    position: relative;
+    text-align: center;
+    padding: 0 32px 56px;
+    animation: fadeUp 1.2s 0.4s both;
+  }
+
+  .cover-tag {
+    font-family: 'Cormorant Garamond', serif;
+    font-style: italic;
+    font-size: 13px;
+    letter-spacing: 0.3em;
+    color: var(--color-green);
+    margin-bottom: 16px;
+    text-transform: uppercase;
+  }
+
+  .cover-names {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 42px;
+    font-weight: 300;
+    letter-spacing: 0.08em;
+    color: var(--color-text);
+    line-height: 1.1;
+    margin-bottom: 20px;
+  }
+
+  .cover-names .amp {
+    font-style: italic;
+    color: var(--color-green);
+    font-size: 36px;
+    display: inline-block;
+    margin: 0 6px;
+  }
+
+  .cover-date {
+    font-size: 12px;
+    letter-spacing: 0.25em;
+    color: var(--color-muted);
+    margin-bottom: 24px;
+  }
+
+  .scroll-hint {
+    width: 1px;
+    height: 48px;
+    background: linear-gradient(to bottom, var(--color-green), transparent);
+    margin: 0 auto;
+    animation: pulse 2s infinite;
+  }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 0.4; }
+    50% { opacity: 1; }
+  }
+
+  /* ── 공통 섹션 ── */
+  section {
+    padding: 64px 32px;
+    opacity: 0;
+    transform: translateY(30px);
+    transition: opacity 0.8s ease, transform 0.8s ease;
+  }
+
+  section.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  .section-eyebrow {
+    font-family: 'Cormorant Garamond', serif;
+    font-style: italic;
+    font-size: 12px;
+    letter-spacing: 0.4em;
+    color: var(--color-green);
+    text-transform: uppercase;
+    text-align: center;
+    margin-bottom: 12px;
+  }
+
+  .section-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 26px;
+    font-weight: 300;
+    text-align: center;
+    letter-spacing: 0.05em;
+    margin-bottom: 32px;
+    color: var(--color-text);
+  }
+
+  .divider {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin: 0 auto 40px;
+    max-width: 200px;
+  }
+
+  .divider-line {
+    flex: 1;
+    height: 1px;
+    background: var(--color-line);
+  }
+
+  .divider-leaf {
+    color: var(--color-green);
+    font-size: 14px;
+  }
+
+  /* ── 인사말 ── */
+  .greeting-section {
+    background: var(--color-cream);
+  }
+
+  .greeting-text {
+    font-size: 13.5px;
+    line-height: 2.4;
+    text-align: center;
+    color: var(--color-muted);
+    word-break: keep-all;
+    white-space: pre-line;
+  }
+
+  .greeting-text strong {
+    color: var(--color-text);
+    font-weight: 400;
+  }
+
+  /* ── 날짜 & 장소 ── */
+  .info-card {
+    background: white;
+    border: 1px solid var(--color-line);
+    border-radius: 2px;
+    padding: 32px;
+    text-align: center;
+    margin-bottom: 16px;
+  }
+
+  .info-label {
+    font-size: 10px;
+    letter-spacing: 0.35em;
+    color: var(--color-green);
+    text-transform: uppercase;
+    margin-bottom: 10px;
+  }
+
+  .info-value {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 22px;
+    font-weight: 300;
+    letter-spacing: 0.04em;
+    color: var(--color-text);
+    margin-bottom: 6px;
+  }
+
+  .info-sub {
+    font-size: 12px;
+    color: var(--color-muted);
+    letter-spacing: 0.1em;
+  }
+
+  /* ── 갤러리 ── */
+  .gallery-section { padding: 48px 0; }
+
+  .gallery-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 3px;
+    padding: 0 16px;
+  }
+
+  .gallery-grid .main-img {
+    grid-column: 1 / -1;
+  }
+
+  .gallery-grid img {
+    width: 100%;
+    aspect-ratio: 3/4;
+    object-fit: cover;
+    display: block;
+  }
+
+  .gallery-grid .main-img img {
+    aspect-ratio: 4/3;
+  }
+
+  /* ── 혼주 ── */
+  .parents-section { background: var(--color-cream); }
+
+  .parents-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 16px;
+    margin-bottom: 24px;
+    padding-bottom: 24px;
+    border-bottom: 1px solid var(--color-line);
+  }
+
+  .parents-row:last-child {
+    margin-bottom: 0;
+    padding-bottom: 0;
+    border-bottom: none;
+  }
+
+  .parents-label {
+    font-size: 11px;
+    letter-spacing: 0.3em;
+    color: var(--color-green);
+    margin-bottom: 8px;
+  }
+
+  .parents-name {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 18px;
+    color: var(--color-text);
+    margin-bottom: 2px;
+  }
+
+  .parents-relation {
+    font-size: 11px;
+    color: var(--color-muted);
+  }
+
+  .tel-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 11px;
+    color: var(--color-green);
+    border: 1px solid var(--color-green-light);
+    padding: 6px 12px;
+    border-radius: 30px;
+    text-decoration: none;
+    margin-top: 8px;
+    transition: background 0.2s;
+  }
+
+  .tel-btn:hover { background: var(--color-green-light); }
+
+  /* ── 지도 ── */
+  .map-section {}
+
+  .map-placeholder {
+    width: 100%;
+    aspect-ratio: 4/3;
+    background: #e8ede5;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    border: 1px solid var(--color-line);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .map-placeholder::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image:
+      linear-gradient(var(--color-line) 1px, transparent 1px),
+      linear-gradient(90deg, var(--color-line) 1px, transparent 1px);
+    background-size: 32px 32px;
+    opacity: 0.4;
+  }
+
+  .map-icon {
+    font-size: 32px;
+    position: relative;
+  }
+
+  .map-text {
+    font-size: 12px;
+    color: var(--color-muted);
+    text-align: center;
+    position: relative;
+  }
+
+  .map-link-btn {
+    display: block;
+    text-align: center;
+    margin-top: 16px;
+    padding: 14px;
+    background: var(--color-green);
+    color: white;
+    text-decoration: none;
+    font-size: 13px;
+    letter-spacing: 0.2em;
+    border-radius: 2px;
+    transition: background 0.2s;
+  }
+
+  .map-link-btn:hover { background: #5a7a5a; }
+
+  .transport-list {
+    margin-top: 24px;
+  }
+
+  .transport-item {
+    display: flex;
+    gap: 12px;
+    padding: 14px 0;
+    border-bottom: 1px solid var(--color-line);
+    font-size: 12.5px;
+    color: var(--color-muted);
+    line-height: 1.7;
+  }
+
+  .transport-item:last-child { border-bottom: none; }
+
+  .transport-icon {
+    font-size: 16px;
+    flex-shrink: 0;
+    width: 24px;
+    text-align: center;
+    margin-top: 1px;
+  }
+
+  /* ── 계좌번호 ── */
+  .account-section { background: var(--color-cream); }
+
+  .account-toggle {
+    width: 100%;
+    background: white;
+    border: 1px solid var(--color-line);
+    border-radius: 2px;
+    padding: 18px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    cursor: pointer;
+    font-family: 'Noto Serif KR', serif;
+    font-size: 13px;
+    color: var(--color-text);
+    margin-bottom: 8px;
+    transition: background 0.2s;
+  }
+
+  .account-toggle:hover { background: #f8f6f2; }
+
+  .account-toggle-arrow {
+    color: var(--color-green);
+    transition: transform 0.3s;
+    font-size: 16px;
+  }
+
+  .account-toggle.open .account-toggle-arrow { transform: rotate(180deg); }
+
+  .account-detail {
+    display: none;
+    background: white;
+    border: 1px solid var(--color-line);
+    border-top: none;
+    padding: 20px;
+    margin-top: -8px;
+    margin-bottom: 8px;
+  }
+
+  .account-detail.open { display: block; }
+
+  .account-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 0;
+    border-bottom: 1px solid var(--color-line);
+  }
+
+  .account-row:last-child { border-bottom: none; }
+
+  .account-info { font-size: 12.5px; color: var(--color-muted); }
+  .account-info strong { display: block; color: var(--color-text); font-size: 13px; font-weight: 400; margin-bottom: 2px; }
+
+  .copy-btn {
+    font-size: 11px;
+    color: var(--color-green);
+    border: 1px solid var(--color-green-light);
+    padding: 5px 10px;
+    border-radius: 20px;
+    cursor: pointer;
+    background: transparent;
+    transition: background 0.2s;
+    font-family: 'Noto Serif KR', serif;
+  }
+
+  .copy-btn:hover { background: var(--color-green-light); }
+  .copy-btn.copied { background: var(--color-green-light); color: #3a5a3a; }
+
+  /* ── 마무리 ── */
+  .closing-section {
+    text-align: center;
+    padding: 72px 32px 80px;
+  }
+
+  .closing-ornament {
+    font-family: 'Cormorant Garamond', serif;
+    font-style: italic;
+    font-size: 48px;
+    color: var(--color-green-light);
+    line-height: 1;
+    margin-bottom: 24px;
+  }
+
+  .closing-text {
+    font-size: 13px;
+    line-height: 2.4;
+    color: var(--color-muted);
+    margin-bottom: 32px;
+    word-break: keep-all;
+  }
+
+  .closing-names {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 28px;
+    font-weight: 300;
+    letter-spacing: 0.08em;
+    color: var(--color-text);
+  }
+
+  .closing-names .amp {
+    font-style: italic;
+    color: var(--color-green);
+    margin: 0 8px;
+  }
+
+  /* ── 애니메이션 ── */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(24px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  /* ── 장식 요소 ── */
+  .petal {
+    display: inline-block;
+    color: var(--color-green-light);
+    font-size: 10px;
+  }
+
+  .floral-divider {
+    text-align: center;
+    color: var(--color-green-light);
+    font-size: 18px;
+    letter-spacing: 8px;
+    margin: 8px 0;
+  }
+</style>
+</head>
+<body>
+
+<!-- ══════════════════════════════════
+     ✏️  개인정보 수정 구역 (JavaScript)
+     아래 객체의 값들을 수정해주세요!
+════════════════════════════════════ -->
+<script>
+const INFO = {
+  // ── 이름 ──────────────────────────
+  groomFamily: "김",
+  groomName:   "준혁",
+  brideFamily: "이",
+  brideName:   "수아",
+
+  // ── 날짜 & 시간 ────────────────────
+  weddingDateKr: "2025년 10월 18일 토요일",
+  weddingTime:   "오후 2시",
+
+  // ── 장소 ──────────────────────────
+  venueName:    "더 포레스트 웨딩홀",
+  venueAddress: "서울시 강남구 논현로 123",
+  venueHall:    "그린 홀 3층",
+
+  // ── 연락처 ──────────────────────────
+  groomTel:        "010-1234-5678",
+  brideTel:        "010-9876-5432",
+  groomParentsTel: "010-1111-2222",
+  brideParentsTel: "010-3333-4444",
+  groomParentsRelation: "신랑 부모님",
+  brideParentsRelation: "신부 부모님",
+  groomParentsName: "김○○ · 박○○",
+  brideParentsName: "이○○ · 최○○",
+
+  // ── 계좌번호 ──────────────────────────
+  groomBank:       "신한은행 110-123-456789",
+  brideBank:       "국민은행 123-45-678901",
+  groomBankHolder: "김준혁",
+  brideBankHolder: "이수아",
+
+  // ── 지도 링크 ──────────────────────────
+  mapLink: "https://map.kakao.com",
+
+  // ── 사진 URL ──────────────────────────
+  // 직접 찍은 사진은 base64로 넣거나 웹 URL을 사용하세요
+  mainPhoto: "https://images.unsplash.com/photo-1606216794074-735e91aa2c92?w=800&q=80",
+  photo2:    "https://images.unsplash.com/photo-1519741347686-c1e0aadf4611?w=600&q=80",
+  photo3:    "https://images.unsplash.com/photo-1511285560929-80b456503681?w=600&q=80",
+
+  // ── 인사말 (줄바꿈: \n) ──────────────────
+  greetingText: `서로가 마주 보며 다져온 사랑을\n이제 함께 한 곳을 바라보며 걸어가고자 합니다.\n\n저희 두 사람이 사랑으로 만나\n하나의 가정을 이루는 날에\n오셔서 축복해 주시면\n더없는 기쁨이 되겠습니다.`,
+
+  // ── 교통편 안내 ──────────────────────────
+  transport: [
+    { icon: "🚇", title: "지하철", desc: "9호선 신논현역 1번 출구에서 도보 5분" },
+    { icon: "🚌", title: "버스", desc: "강남역 방향 146, 341, 360번 논현동 하차" },
+    { icon: "🚗", title: "주차", desc: "건물 내 주차 3시간 무료 (발렛 가능)" },
+  ]
+};
+</script>
+
+<!-- ══════════ 커버 ══════════ -->
+<div class="cover">
+  <div class="cover-photo" id="coverPhoto"></div>
+  <div class="cover-overlay"></div>
+  <div class="cover-content">
+    <p class="cover-tag">Wedding Invitation</p>
+    <h1 class="cover-names">
+      <span id="groomFullName"></span>
+      <span class="amp">&</span>
+      <span id="brideFullName"></span>
+    </h1>
+    <p class="cover-date" id="coverDate"></p>
+    <div class="scroll-hint"></div>
+  </div>
+</div>
+
+<!-- ══════════ 인사말 ══════════ -->
+<section class="greeting-section">
+  <p class="section-eyebrow">Greeting</p>
+  <div class="divider"><div class="divider-line"></div><span class="divider-leaf">✦</span><div class="divider-line"></div></div>
+  <p class="greeting-text" id="greetingText"></p>
+</section>
+
+<!-- ══════════ 날짜 & 장소 ══════════ -->
+<section>
+  <p class="section-eyebrow">Date & Venue</p>
+  <div class="divider"><div class="divider-line"></div><span class="divider-leaf">✦</span><div class="divider-line"></div></div>
+  <div class="info-card">
+    <p class="info-label">Date</p>
+    <p class="info-value" id="weddingDate"></p>
+    <p class="info-sub" id="weddingTime"></p>
+  </div>
+  <div class="info-card">
+    <p class="info-label">Venue</p>
+    <p class="info-value" id="venueName"></p>
+    <p class="info-sub" id="venueHall"></p>
+    <p class="info-sub" id="venueAddress" style="margin-top:4px; font-size:11px;"></p>
+  </div>
+</section>
+
+<!-- ══════════ 갤러리 ══════════ -->
+<section class="gallery-section" style="padding: 0 0 48px;">
+  <p class="section-eyebrow" style="padding-top:48px;">Gallery</p>
+  <div class="divider"><div class="divider-line"></div><span class="divider-leaf">✦</span><div class="divider-line"></div></div>
+  <div class="gallery-grid">
+    <div class="main-img"><img id="photo1" src="" alt="웨딩 사진 1" loading="lazy"></div>
+    <div><img id="photo2" src="" alt="웨딩 사진 2" loading="lazy"></div>
+    <div><img id="photo3" src="" alt="웨딩 사진 3" loading="lazy"></div>
+  </div>
+</section>
+
+<!-- ══════════ 혼주 ══════════ -->
+<section class="parents-section">
+  <p class="section-eyebrow">Family</p>
+  <div class="divider"><div class="divider-line"></div><span class="divider-leaf">✦</span><div class="divider-line"></div></div>
+  <div class="parents-row">
+    <div>
+      <p class="parents-label">신랑측</p>
+      <p class="parents-name" id="groomParentsName"></p>
+      <p class="parents-relation" id="groomParentsRelation"></p>
+      <a class="tel-btn" id="groomParentsTelLink" href="#">📞 연락하기</a>
+    </div>
+    <div>
+      <p class="parents-label">신랑</p>
+      <p class="parents-name" id="groomNameFull2"></p>
+      <p class="parents-relation">신랑</p>
+      <a class="tel-btn" id="groomTelLink" href="#">📞 연락하기</a>
+    </div>
+  </div>
+  <div class="parents-row">
+    <div>
+      <p class="parents-label">신부측</p>
+      <p class="parents-name" id="brideParentsName"></p>
+      <p class="parents-relation" id="brideParentsRelation"></p>
+      <a class="tel-btn" id="brideParentsTelLink" href="#">📞 연락하기</a>
+    </div>
+    <div>
+      <p class="parents-label">신부</p>
+      <p class="parents-name" id="brideNameFull2"></p>
+      <p class="parents-relation">신부</p>
+      <a class="tel-btn" id="brideTelLink" href="#">📞 연락하기</a>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════ 오시는 길 ══════════ -->
+<section class="map-section">
+  <p class="section-eyebrow">Location</p>
+  <div class="divider"><div class="divider-line"></div><span class="divider-leaf">✦</span><div class="divider-line"></div></div>
+  <div class="map-placeholder">
+    <span class="map-icon">📍</span>
+    <span class="map-text" id="mapVenueName"></span>
+  </div>
+  <a class="map-link-btn" id="mapLinkBtn" href="#" target="_blank">지도 앱으로 보기</a>
+  <div class="transport-list" id="transportList"></div>
+</section>
+
+<!-- ══════════ 마음 전하기 (계좌) ══════════ -->
+<section class="account-section">
+  <p class="section-eyebrow">Gift</p>
+  <div class="divider"><div class="divider-line"></div><span class="divider-leaf">✦</span><div class="divider-line"></div></div>
+  <p style="text-align:center; font-size:12.5px; color:var(--color-muted); line-height:2; margin-bottom:24px; word-break:keep-all;">
+    참석이 어려우신 분들을 위해<br>마음만 전해 주셔도 감사히 받겠습니다.
+  </p>
+
+  <button class="account-toggle" id="toggleGroom" onclick="toggleAccount('groom')">
+    <span>신랑측 계좌번호</span>
+    <span class="account-toggle-arrow" id="arrowGroom">▾</span>
+  </button>
+  <div class="account-detail" id="detailGroom">
+    <div class="account-row">
+      <div class="account-info">
+        <strong id="groomBankHolder"></strong>
+        <span id="groomBank"></span>
+      </div>
+      <button class="copy-btn" id="copyGroom" onclick="copyAccount('groom')">복사</button>
+    </div>
+  </div>
+
+  <button class="account-toggle" id="toggleBride" onclick="toggleAccount('bride')">
+    <span>신부측 계좌번호</span>
+    <span class="account-toggle-arrow" id="arrowBride">▾</span>
+  </button>
+  <div class="account-detail" id="detailBride">
+    <div class="account-row">
+      <div class="account-info">
+        <strong id="brideBankHolder"></strong>
+        <span id="brideBank"></span>
+      </div>
+      <button class="copy-btn" id="copyBride" onclick="copyAccount('bride')">복사</button>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════ 클로징 ══════════ -->
+<section class="closing-section">
+  <div class="closing-ornament">❧</div>
+  <p class="closing-text">
+    두 사람의 새로운 출발을<br>
+    진심으로 축복해 주셔서 감사합니다.
+  </p>
+  <p class="closing-names">
+    <span id="closingGroom"></span>
+    <span class="amp">&</span>
+    <span id="closingBride"></span>
+  </p>
+  <div class="floral-divider" style="margin-top:32px;">· · ·</div>
+</section>
+
+
+<!-- ══════════ 스크립트 ══════════ -->
+<script>
+// ── 정보 채우기
+document.getElementById('coverPhoto').style.backgroundImage = `url(${INFO.mainPhoto})`;
+document.getElementById('groomFullName').textContent = INFO.groomFamily + INFO.groomName;
+document.getElementById('brideFullName').textContent = INFO.brideFamily + INFO.brideName;
+document.getElementById('coverDate').textContent = INFO.weddingDateKr;
+document.getElementById('greetingText').textContent = INFO.greetingText;
+document.getElementById('weddingDate').textContent = INFO.weddingDateKr;
+document.getElementById('weddingTime').textContent = INFO.weddingTime;
+document.getElementById('venueName').textContent = INFO.venueName;
+document.getElementById('venueHall').textContent = INFO.venueHall;
+document.getElementById('venueAddress').textContent = INFO.venueAddress;
+document.getElementById('photo1').src = INFO.mainPhoto;
+document.getElementById('photo2').src = INFO.photo2;
+document.getElementById('photo3').src = INFO.photo3;
+document.getElementById('groomParentsName').textContent = INFO.groomParentsName;
+document.getElementById('groomParentsRelation').textContent = INFO.groomParentsRelation;
+document.getElementById('brideParentsName').textContent = INFO.brideParentsName;
+document.getElementById('brideParentsRelation').textContent = INFO.brideParentsRelation;
+document.getElementById('groomNameFull2').textContent = INFO.groomFamily + INFO.groomName;
+document.getElementById('brideNameFull2').textContent = INFO.brideFamily + INFO.brideName;
+document.getElementById('groomParentsTelLink').href = `tel:${INFO.groomParentsTel}`;
+document.getElementById('brideParentsTelLink').href = `tel:${INFO.brideParentsTel}`;
+document.getElementById('groomTelLink').href = `tel:${INFO.groomTel}`;
+document.getElementById('brideTelLink').href = `tel:${INFO.brideTel}`;
+document.getElementById('mapVenueName').textContent = INFO.venueName + '\n' + INFO.venueAddress;
+document.getElementById('mapLinkBtn').href = INFO.mapLink;
+document.getElementById('groomBankHolder').textContent = INFO.groomBankHolder;
+document.getElementById('groomBank').textContent = INFO.groomBank;
+document.getElementById('brideBankHolder').textContent = INFO.brideBankHolder;
+document.getElementById('brideBank').textContent = INFO.brideBank;
+document.getElementById('closingGroom').textContent = INFO.groomFamily + INFO.groomName;
+document.getElementById('closingBride').textContent = INFO.brideFamily + INFO.brideName;
+
+// ── 교통편
+const tList = document.getElementById('transportList');
+INFO.transport.forEach(t => {
+  tList.innerHTML += `
+    <div class="transport-item">
+      <span class="transport-icon">${t.icon}</span>
+      <div><strong style="display:block;font-size:12px;color:var(--color-text);font-weight:400;margin-bottom:2px;">${t.title}</strong>${t.desc}</div>
+    </div>`;
+});
+
+// ── 계좌 토글
+function toggleAccount(who) {
+  const toggle = document.getElementById('toggle' + (who === 'groom' ? 'Groom' : 'Bride'));
+  const detail = document.getElementById('detail' + (who === 'groom' ? 'Groom' : 'Bride'));
+  const arrow  = document.getElementById('arrow'  + (who === 'groom' ? 'Groom' : 'Bride'));
+  toggle.classList.toggle('open');
+  detail.classList.toggle('open');
+}
+
+// ── 계좌 복사
+function copyAccount(who) {
+  const text = who === 'groom' ? INFO.groomBank : INFO.brideBank;
+  navigator.clipboard.writeText(text).then(() => {
+    const btn = document.getElementById('copy' + (who === 'groom' ? 'Groom' : 'Bride'));
+    btn.textContent = '복사됨 ✓';
+    btn.classList.add('copied');
+    setTimeout(() => { btn.textContent = '복사'; btn.classList.remove('copied'); }, 2000);
+  });
+}
+
+// ── 스크롤 페이드인
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
+}, { threshold: 0.12 });
+
+document.querySelectorAll('section').forEach(s => observer.observe(s));
+</script>
+</body>
+</html>
