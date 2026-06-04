@@ -1,0 +1,531 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>우리 결혼합니다 💌</title>
+    <link rel="stylesheet" href="https://unpkg.com/aos@next/dist/aos.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* 기본 스타일 셋팅 */
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: 'Noto Sans KR', sans-serif;
+            background-color: #f6f3ee;
+            color: #4a4a4a;
+            line-height: 1.8;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+        .container {
+            width: 100%;
+            max-width: 450px;
+            background: #ffffff;
+            box-shadow: 0 0 30px rgba(0,0,0,0.03);
+            text-align: center;
+            padding-bottom: 60px;
+            overflow-x: hidden;
+        }
+
+        /* 섹션 공통 */
+        section { padding: 60px 24px; }
+        .section-title {
+            font-size: 13px;
+            letter-spacing: 5px;
+            color: #b39274;
+            margin-bottom: 35px;
+            text-transform: uppercase;
+            font-weight: 600;
+        }
+
+        /* 메인 상단 */
+        .main-hero { padding: 0; position: relative; }
+        .main-hero img { width: 100%; height: auto; display: block; }
+        .main-info { padding: 45px 20px; background: #fff; }
+        .main-title { font-size: 22px; letter-spacing: 2px; color: #333; margin-bottom: 15px; font-weight: 400; }
+        .main-date { font-size: 14px; color: #888; letter-spacing: 1px; }
+
+        /* 모시는 글 */
+        .greeting-text { font-size: 15px; color: #555; line-height: 2.2; margin-bottom: 40px; }
+        .relations { font-size: 15px; color: #444; border-top: 1px solid #f2ece4; border-bottom: 1px solid #f2ece4; padding: 25px 0; }
+        .relations p { margin: 10px 0; }
+        .relations b { color: #222; font-weight: 500; }
+
+        /* 달력 섹션 */
+        .calendar-container {
+            max-width: 300px;
+            margin: 0 auto;
+            font-size: 14px;
+        }
+        .calendar-title {
+            font-size: 16px;
+            color: #333;
+            margin-bottom: 20px;
+            font-weight: 500;
+        }
+        .calendar-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 12px 5px;
+            text-align: center;
+        }
+        .calendar-grid .day-name {
+            font-size: 12px;
+            color: #aaa;
+            font-weight: 500;
+            margin-bottom: 5px;
+        }
+        .calendar-grid .day-name.sun { color: #d96a6a; }
+        .calendar-grid .day-name.sat { color: #6a89d9; }
+        .calendar-grid .day {
+            padding: 5px 0;
+            color: #555;
+            position: relative;
+        }
+        .calendar-grid .day.sun { color: #d96a6a; }
+        .calendar-grid .day.sat { color: #6a89d9; }
+        .calendar-grid .day.empty { pointer-events: none; }
+        .calendar-grid .day.wedding-day {
+            background-color: #b39274;
+            color: #fff !important;
+            border-radius: 50%;
+            font-weight: bold;
+        }
+
+        /* 갤러리 섹션 */
+        .gallery-grid { 
+            display: grid; 
+            grid-template-columns: repeat(3, 1fr); 
+            gap: 6px; 
+            padding: 0 4px; 
+        }
+        .gallery-item { 
+            position: relative;
+            width: 100%;
+            padding-top: 100%; /* 1:1 정정사각형 비율 */
+            cursor: pointer;
+            overflow: hidden;
+            border-radius: 2px;
+        }
+        .gallery-item img { 
+            position: absolute;
+            top: 0; left: 0;
+            width: 100%; height: 100%; 
+            object-fit: cover; 
+            transition: transform 0.3s ease;
+        }
+        .gallery-item:hover img {
+            transform: scale(1.05);
+        }
+        /* 더보기 버튼 */
+        .more-btn-container { margin-top: 25px; }
+        .more-btn {
+            background: none;
+            border: 1px solid #d3c4b4;
+            padding: 10px 30px;
+            font-size: 13px;
+            color: #8e735b;
+            border-radius: 20px;
+            cursor: pointer;
+            outline: none;
+            transition: all 0.3s;
+        }
+        .more-btn:hover {
+            background: #fdfbf9;
+            border-color: #b39274;
+        }
+
+        /* 라이트박스 모달 (사진 크게 보기 및 슬라이드) */
+        .lightbox {
+            display: none;
+            position: fixed;
+            z-index: 10000;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background-color: rgba(0,0,0,0.9);
+            justify-content: center;
+            align-items: center;
+            user-select: none;
+        }
+        .lightbox-content {
+            max-width: 95%;
+            max-height: 80%;
+            position: relative;
+        }
+        .lightbox-content img {
+            max-width: 100%;
+            max-height: 80vh;
+            object-fit: contain;
+            display: block;
+            margin: auto;
+        }
+        .lightbox-close {
+            position: absolute;
+            top: -40px; right: 10px;
+            color: #fff;
+            font-size: 30px;
+            cursor: pointer;
+        }
+        .lightbox-nav {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            color: rgba(255,255,255,0.7);
+            font-size: 35px;
+            cursor: pointer;
+            padding: 10px;
+            transition: color 0.2s;
+        }
+        .lightbox-nav:hover { color: #fff; }
+        .lightbox-prev { left: -20px; }
+        .lightbox-next { right: -20px; }
+
+        /* 오시는 길 */
+        .map-placeholder {
+            width: 100%; height: 220px; background: #f4f1eb; 
+            display: flex; justify-content: center; align-items: center; 
+            color: #888; font-size: 13px; margin-bottom: 25px;
+            border-radius: 4px;
+        }
+        .way-info { text-align: left; padding: 0 5px; }
+        .way-info h4 { font-size: 15px; color: #b39274; margin-bottom: 6px; font-weight: 500; }
+        .way-info p { font-size: 13px; color: #666; margin-bottom: 22px; line-height: 1.6; }
+
+        /* 축의금 계좌 토글 디자인 */
+        .account-group { margin-bottom: 25px; text-align: left; }
+        .account-group-title {
+            background: #fdfbf9;
+            border: 1px solid #eadecc;
+            padding: 14px 20px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            color: #7c624d;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+        .account-group-title i {
+            transition: transform 0.3s;
+        }
+        .account-group-title.active i {
+            transform: rotate(180deg);
+        }
+        .account-list {
+            display: none;
+            background: #fafaf8;
+            border: 1px solid #eee7dd;
+            border-top: none;
+            border-radius: 0 0 6px 6px;
+            margin-top: -10px;
+            margin-bottom: 10px;
+            padding: 10px 5px;
+        }
+        .account-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 15px;
+            border-bottom: 1px solid #f2ece4;
+            font-size: 13px;
+        }
+        .account-row:last-child { border-bottom: none; }
+        .account-info em { font-style: normal; color: #999; margin-right: 5px; font-size: 12px; }
+        .account-info span { font-weight: 500; color: #333; }
+        .account-number { display: block; color: #666; margin-top: 2px; font-size: 12px; }
+        .copy-btn {
+            background: #fff;
+            border: 1px solid #dcd1c4;
+            padding: 4px 10px;
+            font-size: 11px;
+            color: #7c624d;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        .copy-btn:hover { background: #fdfbf9; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+
+    <section class="main-hero">
+        <img src="main.jpg" alt="메인 사진">
+        <div class="main-info">
+            <p class="main-title">진석 ♥ 수연</p>
+            <p class="main-date">2026년 10월 18일 일요일 오후 1시 20분<br>더컨벤션 송파문정 12층 그랜드볼룸홀</p>
+        </div>
+    </section>
+
+    <hr style="border: 0; height: 1px; background: #f2ece4; margin: 0 24px;">
+
+    <section data-aos="fade-up" data-aos-duration="1000">
+        <p class="section-title">INVITATION</p>
+        <p class="greeting-text">
+            서로가 마주보며 다져온 사랑을<br>
+            이제 함께 한 곳을 바라보며 걸어가고자 합니다.<br>
+            저희의 뜻깊은 출발의 자리에 오셔서<br>
+            따뜻한 격려로 축복해 주시면 감사하겠습니다.
+        </p>
+        
+        <div class="relations">
+            <p>김진구 · 송철안 의 아들 <b>진석</b></p>
+            <p>정태성 · 박경아 의 딸 <b>수연</b></p>
+        </div>
+    </section>
+
+<!-- 3. 달력 섹션 (10월 18일 일요일 예식 완벽 수정) -->
+    <section style="background-color: #fafaf8;" data-aos="fade-up" data-aos-duration="1000">
+        <p class="section-title">CALENDAR</p>
+        <div class="calendar-container">
+            <div class="calendar-title">10월</div>
+            <div class="calendar-grid">
+                <!-- 요일 이름 -->
+                <div class="day-name sun">일</div><div class="day-name">월</div><div class="day-name">화</div>
+                <div class="day-name">수</div><div class="day-name">목</div><div class="day-name">금</div><div class="day-name sat">토</div>
+                
+                <!-- 날짜 채우기 (2026년 10월 1일은 목요일이므로 공백 4칸) -->
+                <div class="day empty"></div><div class="day empty"></div><div class="day empty"></div><div class="day empty"></div>
+                <div class="day">1</div><div class="day">2</div><div class="day sat">3</div>
+                
+                <div class="day sun">4</div><div class="day">5</div><div class="day">6</div><div class="day">7</div><div class="day">8</div><div class="day">9</div><div class="day sat">10</div>
+                
+                <div class="day sun">11</div><div class="day">12</div><div class="day">13</div><div class="day">14</div><div class="day">15</div><div class="day">16</div><div class="day sat">17</div>
+                
+                <!-- 18일 일요일 자리에 정확히 안착 -->
+                <div class="day sun wedding-day">18</div><div class="day">19</div><div class="day">20</div><div class="day">21</div><div class="day">22</div><div class="day">23</div><div class="day sat">24</div>
+                
+                <div class="day sun">25</div><div class="day">26</div><div class="day">27</div><div class="day">28</div><div class="day">29</div><div class="day">30</div><div class="day sat">31</div>
+            </div>
+        </div>
+    </section>
+
+    <section data-aos="fade-up" data-aos-duration="1000">
+        <p class="section-title">GALLERY</p>
+        <div class="gallery-grid" id="galleryGrid">
+            <div class="gallery-item"><img src="photo1.jpg" alt="사진1" onclick="openLightbox(0)"></div>
+            <div class="gallery-item"><img src="photo2.jpg" alt="사진2" onclick="openLightbox(1)"></div>
+            <div class="gallery-item"><img src="photo3.jpg" alt="사진3" onclick="openLightbox(2)"></div>
+            <div class="gallery-item"><img src="photo4.jpg" alt="사진4" onclick="openLightbox(3)"></div>
+            <div class="gallery-item"><img src="photo5.jpg" alt="사진5" onclick="openLightbox(4)"></div>
+            <div class="gallery-item"><img src="photo6.jpg" alt="사진6" onclick="openLightbox(5)"></div>
+            <div class="gallery-item"><img src="photo7.jpg" alt="사진7" onclick="openLightbox(6)"></div>
+            <div class="gallery-item"><img src="photo8.jpg" alt="사진8" onclick="openLightbox(7)"></div>
+            <div class="gallery-item"><img src="photo9.jpg" alt="사진9" onclick="openLightbox(8)"></div>
+            
+            <div class="gallery-item" style="display:none;"><img src="photo9.jpg" alt="사진10" onclick="openLightbox(9)"></div>
+            <div class="gallery-item" style="display:none;"><img src="https://via.placeholder.com/400x400?text=11" alt="사진11" onclick="openLightbox(10)"></div>
+            <div class="gallery-item" style="display:none;"><img src="https://via.placeholder.com/400x400?text=12" alt="사진12" onclick="openLightbox(11)"></div>
+        </div>
+        
+        <div class="more-btn-container" id="moreBtnContainer">
+            <button class="more-btn" onclick="showAllPhotos()">더보기 <i class="fa-solid fa-chevron-down"></i></button>
+        </div>
+    </section>
+
+    <div class="lightbox" id="lightbox">
+        <div class="lightbox-content">
+            <span class="lightbox-close" onclick="closeLightbox()">&times;</span>
+            <img id="lightboxImg" src="" alt="확대 사진">
+            <span class="lightbox-nav lightbox-prev" onclick="changePhoto(-1)"><i class="fa-solid fa-chevron-left"></i></span>
+            <span class="lightbox-nav lightbox-next" onclick="changePhoto(1)"><i class="fa-solid fa-chevron-right"></i></span>
+        </div>
+    </div>
+
+    <section data-aos="fade-up" data-aos-duration="1000">
+        <p class="section-title">LOCATION</p>
+        <div class="map-placeholder">
+            📍 실제 지도 연동 또는 약도 이미지가 들어갈 자리입니다.
+        </div>
+        
+        <div class="way-info">
+            <h4>행복웨딩홀 3층 그랜드볼룸</h4>
+            <p>서울 강남구 행복대로 123 (TEL. 02-123-4567)</p>
+
+            <h4>지하철 안내</h4>
+            <p>2호선 강남역 10번 출구 도보 5분</p>
+
+            <h4>버스 안내</h4>
+            <p>간선버스: 140, 441, 470번 (행복역 하역)</p>
+        </div>
+    </section>
+
+    <section style="background-color: #fafaf8;" data-aos="fade-up" data-aos-duration="1000">
+        <p class="section-title">ACCOUNT</p>
+        <p style="font-size:13px; color:#777; margin-bottom:25px;">참석이 어려우신 분들을 위해<br>축하의 마음 전하실 곳을 안내해 드립니다.</p>
+        
+        <div class="account-group">
+            <div class="account-group-title" onclick="toggleAccount('bridegroom')">
+                <span>신랑측 마음 전하실 곳</span>
+                <i class="fa-solid fa-chevron-down"></i>
+            </div>
+            <div class="account-list" id="bridegroom-list">
+                <div class="account-row">
+                    <div class="account-info">
+                        <em>신랑</em><span>김진석</span>
+                        <strong class="account-number">신한은행 110-123-456789</strong>
+                    </div>
+                    <button class="copy-btn" onclick="copyToClipboard('신한은행 110-123-456789')">복사</button>
+                </div>
+                <div class="account-row">
+                    <div class="account-info">
+                        <em>아버님</em><span>김진구</span>
+                        <strong class="account-number">은행 000</strong>
+                    </div>
+                    <button class="copy-btn" onclick="copyToClipboard('은행 000')">복사</button>
+                </div>
+                <div class="account-row">
+                    <div class="account-info">
+                        <em>어머님</em><span>박현숙</span>
+                        <strong class="account-number">우리은행 1002-123-456789</strong>
+                    </div>
+                    <button class="copy-btn" onclick="copyToClipboard('우리은행 1002-123-456789')">복사</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="account-group">
+            <div class="account-group-title" onclick="toggleAccount('bride')">
+                <span>신부측 마음 전하실 곳</span>
+                <i class="fa-solid fa-chevron-down"></i>
+            </div>
+            <div class="account-list" id="bride-list">
+                <div class="account-row">
+                    <div class="account-info">
+                        <em>신부</em><span>정수연</span>
+                        <strong class="account-number">국민은행 54321-01-12345</strong>
+                    </div>
+                    <button class="copy-btn" onclick="copyToClipboard('국민은행 54321-01-12345')">복사</button>
+                </div>
+                <div class="account-row">
+                    <div class="account-info">
+                        <em>아버님</em><span>이수근</span>
+                        <strong class="account-number">하나은행 987-654-32101</strong>
+                    </div>
+                    <button class="copy-btn" onclick="copyToClipboard('하나은행 987-654-32101')">복사</button>
+                </div>
+                <div class="account-row">
+                    <div class="account-info">
+                        <em>어머님</em><span>최지우</span>
+                        <strong class="account-number">농협 302-1234-5678-91</strong>
+                    </div>
+                    <button class="copy-btn" onclick="copyToClipboard('농협 302-1234-5678-91')">복사</button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+</div>
+
+<script src="https://unpkg.com/aos@next/dist/aos.js"></script>
+<script>
+    // 1. 페이드인 효과 엔진 활성화
+    AOS.init({
+        once: true // 스크롤을 다시 올릴 땐 깜빡이지 않고, 최초 1회만 스크롤 페이드인 실행
+    });
+
+    // 2. 축의금 계좌 드롭다운 토글 제어 스크립트
+    function toggleAccount(type) {
+        const list = document.getElementById(type + '-list');
+        const title = list.previousElementSibling;
+        
+        if(list.style.display === 'block') {
+            list.style.display = 'none';
+            title.classList.remove('active');
+        } else {
+            list.style.display = 'block';
+            title.classList.add('active');
+        }
+    }
+
+    // 3. 클립보드로 계좌 정보 복사 기능 구현
+    function copyToClipboard(text) {
+        navigator.clipboard.writeText(text).then(function() {
+            alert('계좌번호가 클립보드에 복사되었습니다.\n(' + text + ')');
+        }, function(err) {
+            alert('보안 환경 등의 이유로 복사에 실패했습니다. 직접 지정해서 복사해 주세요.');
+        });
+    }
+
+    // 4. 갤러리 숨겨진 사진 더보기 토글 기능
+    function showAllPhotos() {
+        const grid = document.getElementById('galleryGrid');
+        const hiddenItems = grid.querySelectorAll('.gallery-item[style*="display:none"]');
+        
+        Array.from(hiddenItems).forEach(item => {
+            item.style.display = 'block';
+        });
+        
+        // 더보기 버튼은 목적을 다했으므로 삭제 처리
+        document.getElementById('moreBtnContainer').style.display = 'none';
+        
+        // 라이트박스가 탐색할 수 있는 이미지 데이터 풀 최신화
+        updateImageList();
+    }
+
+    // 5. 이미지 슬라이더 및 라이트박스 로직
+    let currentImgIdx = 0;
+    let allImageUrls = [];
+
+    function updateImageList() {
+        allImageUrls = [];
+        // 하객 화면에 실제로 렌더링되어 '보여지고 있는' 이미지만 배열에 담습니다.
+        const items = document.querySelectorAll('.gallery-item');
+        items.forEach(item => {
+            if(item.style.display !== 'none') {
+                const img = item.querySelector('img');
+                allImageUrls.push(img.src);
+            }
+        });
+    }
+
+    // 초기 웹 브라우저 렌더링 시 목록 자동 스캔
+    window.onload = function() {
+        updateImageList();
+    };
+
+    function openLightbox(index) {
+        // 더보기를 안 누른 상태에서 배열 꼬임 방지차 사전 업데이트
+        updateImageList();
+        
+        currentImgIdx = index;
+        const lightbox = document.getElementById('lightbox');
+        const lightboxImg = document.getElementById('lightboxImg');
+        
+        lightboxImg.src = allImageUrls[currentImgIdx];
+        lightbox.style.display = 'flex';
+        document.body.style.overflow = 'hidden'; // 팝업 열렸을 때 뒷배경 스크롤 방지
+    }
+
+    function closeLightbox() {
+        document.getElementById('lightbox').style.display = 'none';
+        document.body.style.overflow = 'auto'; // 스크롤 복구
+    }
+
+    function changePhoto(direction) {
+        currentImgIdx += direction;
+        
+        // 처음 사진에서 이전클릭시 끝으로, 끝 사진에서 다음클릭시 처음으로 회전 무한루프 처리
+        if (currentImgIdx < 0) {
+            currentImgIdx = allImageUrls.length - 1;
+        } else if (currentImgIdx >= allImageUrls.length) {
+            currentImgIdx = 0;
+        }
+        
+        document.getElementById('lightboxImg').src = allImageUrls[currentImgIdx];
+    }
+    
+    // 사진 뒤의 어두운 암전 영역을 터치해도 창이 닫히도록 마스킹 처리
+    document.getElementById('lightbox').addEventListener('click', function(e) {
+        if(e.target === this) {
+            closeLightbox();
+        }
+    });
+</script>
+
+</body>
+</html>
