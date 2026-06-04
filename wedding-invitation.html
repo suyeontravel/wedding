@@ -15,37 +15,37 @@
   :root {
     /* 이름 */
     --groom-family: "김";          /* 신랑 성 */
-    --groom-name: "준혁";          /* 신랑 이름 */
-    --bride-family: "이";           /* 신부 성 */
-    --bride-name: "수아";           /* 신부 이름 */
+    --groom-name: "진석";          /* 신랑 이름 */
+    --bride-family: "정";           /* 신부 성 */
+    --bride-name: "수연";           /* 신부 이름 */
 
     /* 날짜 & 시간 */
-    --wedding-date-kr: "2025년 10월 18일 토요일";
-    --wedding-time: "오후 2시";
+    --wedding-date-kr: "2026년 10월 18일 일요일";
+    --wedding-time: "오후 1시 20분";
 
     /* 장소 */
-    --venue-name: "더 포레스트 웨딩홀";
-    --venue-address: "서울시 강남구 논현로 123";
-    --venue-hall: "그린 홀 3층";
+    --venue-name: "더컨벤션 송파문정";
+    --venue-address: "서울시 송파구 송파대로 155";
+    --venue-hall: "그랜드볼룸홀";
 
     /* 연락처 (전화 걸기 링크용) */
     --groom-tel: "010-1234-5678";
-    --bride-tel: "010-9876-5432";
+    --bride-tel: "010-3165-9678";
     --groom-parents-tel: "010-1111-2222";
     --bride-parents-tel: "010-3333-4444";
 
     /* 계좌번호 */
     --groom-bank: "신한은행 110-123-456789";
     --bride-bank: "국민은행 123-45-678901";
-    --groom-bank-holder: "김준혁";
-    --bride-bank-holder: "이수아";
+    --groom-bank-holder: "김진석";
+    --bride-bank-holder: "정수연";
 
     /* 지도 링크 (카카오맵 / 네이버맵 공유 URL) */
     --map-link: "https://map.kakao.com";
 
     /* 메인 사진 (URL 또는 로컬 파일 경로) */
-    --main-photo: "https://images.unsplash.com/photo-1606216794074-735e91aa2c92?w=800&q=80";
-    --photo2: "https://images.unsplash.com/photo-1519741347686-c1e0aadf4611?w=600&q=80";
+    --main-photo: "main.jpg"
+    --photo2: "photo1.jpg";
     --photo3: "https://images.unsplash.com/photo-1511285560929-80b456503681?w=600&q=80";
 
     /* 색상 테마 (필요시 조정) */
@@ -570,18 +570,18 @@
 const INFO = {
   // ── 이름 ──────────────────────────
   groomFamily: "김",
-  groomName:   "준혁",
-  brideFamily: "이",
-  brideName:   "수아",
+  groomName:   "진석",
+  brideFamily: "정",
+  brideName:   "수연",
 
   // ── 날짜 & 시간 ────────────────────
-  weddingDateKr: "2025년 10월 18일 토요일",
-  weddingTime:   "오후 2시",
+  weddingDateKr: "2026년 10월 18일 일요일",
+  weddingTime:   "오후 1시 20분",
 
   // ── 장소 ──────────────────────────
-  venueName:    "더 포레스트 웨딩홀",
-  venueAddress: "서울시 강남구 논현로 123",
-  venueHall:    "그린 홀 3층",
+  venueName:    "더컨벤션 송파문정",
+  venueAddress: "서울 송파구 송파대로 155",
+  venueHall:    "그랜드볼룸홀",
 
   // ── 연락처 ──────────────────────────
   groomTel:        "010-1234-5678",
@@ -596,26 +596,26 @@ const INFO = {
   // ── 계좌번호 ──────────────────────────
   groomBank:       "신한은행 110-123-456789",
   brideBank:       "국민은행 123-45-678901",
-  groomBankHolder: "김준혁",
-  brideBankHolder: "이수아",
+  groomBankHolder: "김진석",
+  brideBankHolder: "정수연",
 
   // ── 지도 링크 ──────────────────────────
   mapLink: "https://map.kakao.com",
 
   // ── 사진 URL ──────────────────────────
   // 직접 찍은 사진은 base64로 넣거나 웹 URL을 사용하세요
-  mainPhoto: "https://images.unsplash.com/photo-1606216794074-735e91aa2c92?w=800&q=80",
-  photo2:    "https://images.unsplash.com/photo-1519741347686-c1e0aadf4611?w=600&q=80",
-  photo3:    "https://images.unsplash.com/photo-1511285560929-80b456503681?w=600&q=80",
+  mainPhoto: "main.jpg",
+  photo2:    "photo1.jpg",
+  photo3:    "photo2.jpg",
 
   // ── 인사말 (줄바꿈: \n) ──────────────────
   greetingText: `서로가 마주 보며 다져온 사랑을\n이제 함께 한 곳을 바라보며 걸어가고자 합니다.\n\n저희 두 사람이 사랑으로 만나\n하나의 가정을 이루는 날에\n오셔서 축복해 주시면\n더없는 기쁨이 되겠습니다.`,
 
   // ── 교통편 안내 ──────────────────────────
   transport: [
-    { icon: "🚇", title: "지하철", desc: "9호선 신논현역 1번 출구에서 도보 5분" },
-    { icon: "🚌", title: "버스", desc: "강남역 방향 146, 341, 360번 논현동 하차" },
-    { icon: "🚗", title: "주차", desc: "건물 내 주차 3시간 무료 (발렛 가능)" },
+    { icon: "🚇", title: "지하철", desc: "8호선 문정역 2번 출구에서 도보 3분" },
+    { icon: "🚌", title: "버스", desc: "30,302,3322,500-1번 등 문정법조단지·건영아파트 정류소에서 하차" },
+    { icon: "🚗", title: "주차", desc: "건물 내 지하 주차 2시간 무료" },
   ]
 };
 </script>
