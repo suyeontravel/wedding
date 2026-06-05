@@ -290,10 +290,64 @@
             cursor: pointer;
         }
         .copy-btn:hover { background: #fdfbf9; }
+
+        /* 인트로 오버레이 전체 화면 */
+        #intro-overlay {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background-color: #f6f3ee;
+            z-index: 99999;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            transition: opacity 1s ease, visibility 1s ease;
+        }
+
+        .intro-content {
+            text-align: center;
+        }
+
+        /* 타이핑 글씨 공통 스타일 */
+        .typing-text {
+            font-family: 'Noto Sans KR', sans-serif; /* 원하시면 불러오신 다른 폰트로 바꾸셔도 됩니다 */
+            display: block;
+            white-space: nowrap;
+            overflow: hidden;
+            min-height: 35px; /* 글자가 없을 때도 높이 유지 */
+        }
+
+        #typing-line-1 {
+            font-size: 18px;
+            font-weight: 300;
+            color: #888;
+            letter-spacing: 2px;
+            margin-bottom: 8px;
+        }
+
+        #typing-line-2 {
+            font-size: 22px;
+            font-weight: 400;
+            color: #333;
+            letter-spacing: 1px;
+        }
+
+        /* 부드럽게 화면 사라지게 하는 클래스 */
+        #intro-overlay.fade-out {
+            opacity: 0;
+            visibility: hidden;
+        }
     </style>
 </head>
 <body>
 
+<div id="intro-overlay">
+    <div class="intro-content">
+        <i class="fa-regular fa-envelope-open" style="font-size: 32px; color: #b39274; margin-bottom: 25px;"></i>
+        <h1 class="typing-text" id="typing-line-1"></h1>
+        <h2 class="typing-text" id="typing-line-2"></h2>
+    </div>
+</div>
 
 <audio id="weddingBgm" src="bgm.mp3" loop></audio>
 
@@ -636,6 +690,52 @@
                 map.setCenter(coords);
             } 
         });
+    });
+    // 인트로 타이핑 효과 스크립트
+    window.addEventListener('DOMContentLoaded', function() {
+        // 원하는 문구를 적어주세요 (띄어쓰기 포함 가능)
+        const line1Text = "진석 그리고 수연";
+        const line2Text = "소중한 날에 초대합니다";
+        
+        const line1Element = document.getElementById('typing-line-1');
+        const line2Element = document.getElementById('typing-line-2');
+        
+        let index1 = 0;
+        let index2 = 0;
+        const speed = 110; // 글자가 나타나는 속도 (밀리초 단위, 숫자가 작을수록 빠름)
+
+        // 첫 번째 줄 타이핑 함수
+        function typeLine1() {
+            if (index1 < line1Text.length) {
+                line1Element.innerHTML += line1Text.charAt(index1);
+                index1++;
+                setTimeout(typeLine1, speed);
+            } else {
+                // 첫 번째 줄이 끝나면 0.3초 쉬고 두 번째 줄 시작
+                setTimeout(typeLine2, 300);
+            }
+        }
+
+        // 두 번째 줄 타이핑 함수
+        function typeLine2() {
+            if (index2 < line2Text.length) {
+                line2Element.innerHTML += line2Text.charAt(index2);
+                index2++;
+                setTimeout(typeLine2, speed);
+            } else {
+                // 모든 타이핑이 끝나면 1초 동안 문구를 보여준 뒤 인트로 화면 종료
+                setTimeout(fadeOutIntro, 1000);
+            }
+        }
+
+        // 인트로 화면을 부드럽게 걷어내는 함수
+        function fadeOutIntro() {
+            const intro = document.getElementById('intro-overlay');
+            intro.classList.add('fade-out');
+        }
+
+        // 페이지가 열리고 0.5초 뒤에 타이핑 시작
+        setTimeout(typeLine1, 500);
     });
 
 </script>
