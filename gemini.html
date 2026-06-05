@@ -1,12 +1,54 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
+    <!-- 카카오 지도 API (실제 지도를 그리기 위한 스크립트) -->
+    <script type="text/javascript" src="https://dapi.kakao.com/v2/maps/sdk.js?appkey=191190423c10129bd601710378e56d0b&libraries=services"></script>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- 손가락으로 화면 확대/축소(핀치 줌)를 불가능하게 설정 -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>우리 결혼합니다 💌</title>
     <link rel="stylesheet" href="https://unpkg.com/aos@next/dist/aos.css" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
     <style>
+        /* 이미지를 길게 누르거나 더블클릭해서 확대/선택/저장하는 행위 방지 */
+        img {
+            -webkit-touch-callout: none;    /* 아이폰에서 길게 눌렀을 때 링크/이미지 팝업창 뜨는 것 방지 */
+            -webkit-user-select: none;      /* 사파리/크롬 등에서 텍스트/이미지 선택 방지 */
+            -khtml-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;              /* 드래그 및 선택 차단 */
+            -webkit-user-drag: none;        /* 이미지를 끌어서 움직이는 것 방지 */
+        }
+        /* 배경음악 버튼 스타일 */
+        .bgm-btn {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 9999;
+            width: 40px;
+            height: 40px;
+            background: rgba(255, 255, 255, 0.85);
+            border: 1px solid #eadecc;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+            color: #7c624d;
+            font-size: 16px;
+        }
+        /* 음악이 재생 중일 때 버튼이 빙글빙글 도는 효과 */
+        .bgm-btn.playing {
+            animation: rotateDisc 4s linear infinite;
+        }
+        @keyframes rotateDisc {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
         /* 기본 스타일 셋팅 */
         * { box-sizing: border-box; margin: 0; padding: 0; }
         body {
@@ -183,11 +225,12 @@
         .lightbox-next { right: -20px; }
 
         /* 오시는 길 */
-        .map-placeholder {
-            width: 100%; height: 220px; background: #f4f1eb; 
-            display: flex; justify-content: center; align-items: center; 
-            color: #888; font-size: 13px; margin-bottom: 25px;
+        #map {
+            width: 100%;
+            height: 250px;
+            margin-bottom: 25px;
             border-radius: 4px;
+            border: 1px solid #eadecc;
         }
         .way-info { text-align: left; padding: 0 5px; }
         .way-info h4 { font-size: 15px; color: #b39274; margin-bottom: 6px; font-weight: 500; }
@@ -251,6 +294,14 @@
 </head>
 <body>
 
+
+<audio id="weddingBgm" src="bgm.mp3" loop></audio>
+
+<div class="bgm-btn" id="bgmBtn" onclick="toggleBgm()">
+    <i class="fa-solid fa-music"></i>
+</div>
+
+
 <div class="container">
 
     <section class="main-hero">
@@ -278,7 +329,7 @@
         </div>
     </section>
 
-<!-- 3. 달력 섹션 (10월 18일 일요일 예식 완벽 수정) -->
+    <!-- 3. 달력 섹션 (10월 18일 일요일 예식 완벽 수정) -->
     <section style="background-color: #fafaf8;" data-aos="fade-up" data-aos-duration="1000">
         <p class="section-title">CALENDAR</p>
         <div class="calendar-container">
@@ -336,21 +387,21 @@
         </div>
     </div>
 
+    <!-- 5. 오시는 길 (실제 카카오맵 연동 버전) -->
     <section data-aos="fade-up" data-aos-duration="1000">
         <p class="section-title">LOCATION</p>
-        <div class="map-placeholder">
-            📍 실제 지도 연동 또는 약도 이미지가 들어갈 자리입니다.
-        </div>
+        
+        <!-- 실제 카카오 지도가 렌더링되는 영역 (크기 조절 가능) -->
+        <div id="map" style="width:100%; height:250px; margin-bottom:25px; border-radius:4px; border:1px solid #eadecc;"></div>
         
         <div class="way-info">
-            <h4>행복웨딩홀 3층 그랜드볼룸</h4>
-            <p>서울 강남구 행복대로 123 (TEL. 02-123-4567)</p>
-
+            <h4>더컨벤션 송파문정 12층 그랜드볼룸홀</h4>
+            <!-- 중요: 아래 주소 텍스트와 3단계 스크립트의 주소가 '완벽히 일치'해야 지도가 올바른 곳을 찾아갑니다 -->
+            <p id="weddingAddress">서울 송파구 송파대로 155 송파농협신청사</p> 
             <h4>지하철 안내</h4>
-            <p>2호선 강남역 10번 출구 도보 5분</p>
-
+            <p>8호선 문정역 10번 출구 도보 5분</p>
             <h4>버스 안내</h4>
-            <p>간선버스: 140, 441, 470번 (행복역 하역)</p>
+            <p>간선버스: 140, 441, 470번 (강남역 하역)</p>
         </div>
     </section>
 
@@ -380,7 +431,7 @@
                 </div>
                 <div class="account-row">
                     <div class="account-info">
-                        <em>어머님</em><span>박현숙</span>
+                        <em>어머님</em><span>송철안</span>
                         <strong class="account-number">우리은행 1002-123-456789</strong>
                     </div>
                     <button class="copy-btn" onclick="copyToClipboard('우리은행 1002-123-456789')">복사</button>
@@ -403,14 +454,14 @@
                 </div>
                 <div class="account-row">
                     <div class="account-info">
-                        <em>아버님</em><span>이수근</span>
+                        <em>아버님</em><span>정태성</span>
                         <strong class="account-number">하나은행 987-654-32101</strong>
                     </div>
                     <button class="copy-btn" onclick="copyToClipboard('하나은행 987-654-32101')">복사</button>
                 </div>
                 <div class="account-row">
                     <div class="account-info">
-                        <em>어머님</em><span>최지우</span>
+                        <em>어머님</em><span>박경아</span>
                         <strong class="account-number">농협 302-1234-5678-91</strong>
                     </div>
                     <button class="copy-btn" onclick="copyToClipboard('농협 302-1234-5678-91')">복사</button>
@@ -423,6 +474,24 @@
 
 <script src="https://unpkg.com/aos@next/dist/aos.js"></script>
 <script>
+
+    // 배경음악 제어 스크립트
+    function toggleBgm() {
+        const bgm = document.getElementById('weddingBgm');
+        const btn = document.getElementById('bgmBtn');
+        const icon = btn.querySelector('i');
+    
+        if (bgm.paused) {
+            bgm.play();
+            btn.classList.add('playing');
+            icon.className = 'fa-solid fa-music'; // 재생 중일 땐 음표 아이콘
+        } else {
+            bgm.pause();
+            btn.classList.remove('playing');
+            icon.className = 'fa-solid fa-volume-xmark'; // 멈췄을 땐 음소거 아이콘
+        }
+    }
+
     // 1. 페이드인 효과 엔진 활성화
     AOS.init({
         once: true // 스크롤을 다시 올릴 땐 깜빡이지 않고, 최초 1회만 스크롤 페이드인 실행
@@ -525,6 +594,50 @@
             closeLightbox();
         }
     });
+    
+    // 카카오 지도 실행 스크립트
+    window.addEventListener('DOMContentLoaded', function() {
+        var mapContainer = document.getElementById('map'), // 지도를 표시할 div 
+            mapOption = {
+                center: new kakao.maps.LatLng(37.4979, 127.0276), // 주소를 못 찾을 경우 기본 중심 좌표 (강남역)
+                level: 3 // 지도의 확대 레벨 (숫자가 작을수록 확대됨)
+            };  
+
+        // 지도 생성
+        var map = new kakao.maps.Map(mapContainer, mapOption); 
+
+        // 주소-좌표 변환 객체를 생성합니다
+        var geocoder = new kakao.maps.services.Geocoder();
+
+        // 위 2단계에서 설정한 주소 텍스트를 자동으로 가져옵니다
+        var address = document.getElementById('weddingAddress').innerText;
+        var weddingHallName = '더컨벤션 송파문정'; // 마커 위에 띄울 예식장 이름
+
+        // 주소로 좌표를 검색합니다
+        geocoder.addressSearch(address, function(result, status) {
+            // 정상적으로 검색이 완료됐으면 
+             if (status === kakao.maps.services.Status.OK) {
+
+                var coords = new kakao.maps.LatLng(result[0].y, result[0].x);
+
+                // 결과값으로 받은 위치를 마커(핀)로 표시합니다
+                var marker = new kakao.maps.Marker({
+                    map: map,
+                    position: coords
+                });
+
+                // 인포윈도우로 장소에 대한 설명을 표시합니다
+                var infowindow = new kakao.maps.InfoWindow({
+                    content: '<div style="width:150px;text-align:center;padding:6px 0;font-size:12px;color:#333;font-weight:500;">' + weddingHallName + '</div>'
+                });
+                infowindow.open(map, marker);
+
+                // 지도의 중심을 결과값으로 받은 위치로 이동시킵니다
+                map.setCenter(coords);
+            } 
+        });
+    });
+
 </script>
 
 </body>
